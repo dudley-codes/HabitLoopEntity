@@ -1,0 +1,64 @@
+USE [master]
+GO
+
+IF db_id('HabitLoop') IS NOT NULL
+BEGIN
+  ALTER DATABASE [HabitLoop] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+  DROP DATABASE [HabitLoop]
+END
+GO
+
+CREATE DATABASE [HabitLoop]
+GO
+
+USE [HabitLoop]
+GO
+
+-----------------------------------------------------------------------------------------------
+
+CREATE TABLE [User] (
+  [Id] INTEGER PRIMARY KEY IDENTITY NOT NULL,
+  [FirebaseUserId] VARCHAR(255) NOT NULL,
+  [FirstName] VARCHAR(255) NOT NULL,
+  [LastName] VARCHAR(255) NOT NULL,
+  [Email] VARCHAR(255) NOT NULL
+  CONSTRAINT UQ_FirebaseUserId UNIQUE(FirebaseUserId)
+)
+GO
+
+CREATE TABLE [Habit] (
+  [Id] INTEGER PRIMARY KEY IDENTITY NOT NULL,
+  [UserId] INTEGER NOT NULL,
+  [Habit] VARCHAR(255) NOT NULL,
+  [Frequency] INTEGER NOT NULL,
+  [HabitStart] DATETIME NOT NULL,
+  [GoodHabit] BIT NOT NULL,
+  [Cue] VARCHAR(255) NOT NULL,
+  [Reward] VARCHAR(255) NOT NULL
+)
+GO
+
+CREATE TABLE [HabitCount] (
+  [Id] INTEGER PRIMARY KEY IDENTITY NOT NULL,
+  [Date] DATETIME NOT NULL,
+  [HabitId] INTEGER NOT NULL
+)
+GO
+
+CREATE TABLE [Journal] (
+  [Id] INTEGER PRIMARY KEY IDENTITY NOT NULL,
+  [Date] DATETIME,
+  [UserId] INTEGER,
+  [Habit] VARCHAR(255),
+  [Entry] VARCHAR(255)
+)
+GO
+
+ALTER TABLE [Habit] ADD FOREIGN KEY ([UserId]) REFERENCES [User] ([Id])
+GO
+
+ALTER TABLE [HabitCount] ADD FOREIGN KEY ([HabitId]) REFERENCES [Habit] ([Id])
+GO
+
+ALTER TABLE [Journal] ADD FOREIGN KEY ([UserId]) REFERENCES [User] ([Id])
+GO
